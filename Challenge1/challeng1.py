@@ -1,4 +1,5 @@
 from matplotlib import pyplot as plt
+import numpy as np
 from pprint import pprint
 
 
@@ -50,3 +51,12 @@ for line in sensor_data:
 
         if line[num] < line[num - 1]:
             raise ValueError("Times should be increasing")
+
+nparray = np.asarray(sensor_data)
+xlocs, ylocs = nparray[:, 0], nparray[:, 1]
+plt.scatter(xlocs, ylocs, color = 'red')
+plt.plot(xlocs, ylocs, color = 'green')
+plt.xlabel("X Distance (m)")
+plt.ylabel("Y Distance (m)")
+plt.title("Map of Sensor Locations")
+plt.savefig('map.png')
