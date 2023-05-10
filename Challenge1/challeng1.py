@@ -1,10 +1,10 @@
 from matplotlib import pyplot as plt
 from matplotlib.animation import FuncAnimation
 import numpy as np
+from drawnow import *
 from pprint import pprint
 
-
-filename = 'splits.txt'
+filename = 'splits2.txt'
 try:
     f = open(filename, 'r')
 except:
@@ -71,7 +71,6 @@ for lap in range(2, numlaps + 2):
     ind += 1
 
 timearray = np.asarray(times)
-
 #an array containing the fastest times for each split
 fastest_splits = np.amin(timearray, axis = 0)
 
@@ -85,8 +84,9 @@ for i in range(numlaps):
         fastest_lap = i
 
 
-#plotting
+# plotting
 nparray = np.asarray(sensor_data)
+# print(nparray[0])
 xlocs, ylocs = nparray[:, 0], nparray[:, 1]
 plt.scatter(xlocs, ylocs, color = 'red')
 plt.plot(xlocs, ylocs, color = 'green')
@@ -97,24 +97,30 @@ plt.title("Map of Sensor Locations")
 plt.savefig('map.png')
 plt.clf
 
+print(numlaps)
+# Animating laps using drawnow
+def makeFig():
+    plt.title(f"Lap {lap_num}")
+    plt.scatter(curr_x, curr_y, color = 'red')
 
-fig, ax = plt.subplots()
-ax.set_xlim(min(xlocs), max(xlocs))
-ax.set_ylim(min(ylocs), max(ylocs))
-line, = ax.plot([], [])
+    if lap_num is fastest_lap:
+        plt.plot(curr_x, curr_y, color = 'purple')
+    else:
+        plt.plot(curr_x, curr_y, color = 'green')
+    plt.xlabel("X Distance (m)")
+    plt.ylabel("Y Distance (m)")
+    plt.xlim(min(xlocs) - 10, max(xlocs) + 10)
+    plt.ylim(min(ylocs) - 10, max(ylocs) + 10)
 
-def init():
-    line.set_data([], [])
-    return line,
-
-def animate(i):
-    x = xlocs[:i+1]
-    y = ylocs[:i+1] 
-    line.set_data(x, y)
-    return line,
-
-def animateplot(speed):
-    anim = FuncAnimation(fig, animate, init_func=init,frames=len(xlocs), interval=500)
+lap_num = 1
+for t in timearray:
+    curr_x = []
+    curr_y = []
+    for i in range(len(t)):
+        curr_x.append(xlocs[i])
+        curr_y.append(ylocs[i])
+        # Pause for the specific amount of time before drawing the appended plot
+        plt.pause(t[i]/10)
+        drawnow(makeFig)
     
-    pass
-
+    lap_num = lap_num + 1
