@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import copy
+import time
 #we set the map up as a (2n + 1) x (2n + 1) grid 
 #to set walls differently
 
@@ -39,11 +40,8 @@ class Node:
         return self.found
     
 def plot_maze(array):
-
-    array[mazecoord(7)][mazecoord(7)] = 0.5
     plt.imshow(array,cmap='magma')
-    #plt.imshow(new,cmap='gray')
-    plt.title("Maze")
+    plt.title("Shortest Path Out")
     plt.show(block = False)
 
 def mazecoord(x):
@@ -105,19 +103,19 @@ def BFS(maze):
         
 
 def update_queue(maze, queue, x, y, prev):
-    if not maze[y][x + 1].get_found():
+    if x + 1 < 15 and not maze[y][x + 1].get_found():
         queue.append(maze[y][x + 1])
         maze[y][x+1].set_prev(prev)
     
-    if not maze[y][x - 1].get_found():
+    if x - 1 >= 0 and not maze[y][x - 1].get_found():
         queue.append(maze[y][x-1])
         maze[y][x-1].set_prev(prev)
 
-    if not maze[y + 1][x].get_found():
+    if y + 1 < 15 and not maze[y + 1][x].get_found():
         queue.append(maze[y + 1][x])
         maze[y + 1][x].set_prev(prev)
 
-    if not maze[y -1 ][x].get_found():
+    if y -1 >= 0 and not maze[y -1 ][x].get_found():
         queue.append(maze[y - 1][x])
         maze[y -1 ][x].set_prev(prev)
 
@@ -126,13 +124,13 @@ def visualise_path(maze, path):
     for x,y in path:
         newmaze[y][x] = 0.5
         plot_maze(newmaze)
-        plt.pause(0.01)
+        plt.pause(0.1)
     plt.pause(3)
 
 def main():
     filename = 'Maps/maze_1.csv'
     maze = create_maze(filename)
-    #plot_maze(maze)
+
     out = BFS(maze)
     if out is None:
         print("False")
@@ -141,7 +139,6 @@ def main():
         print("True")
 
     current = out
-
     path_found = []
     while current != None:
         path_found.append(current.get_pos())
